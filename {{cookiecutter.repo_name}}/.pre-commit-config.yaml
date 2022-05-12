@@ -1,0 +1,49 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.3.0
+    hooks:
+    -   id: check-added-large-files
+    -   id: check-ast
+    -   id: check-executables-have-shebangs
+    -   id: check-merge-conflict
+    -   id: check-toml
+    -   id: check-yaml
+        args: [--allow-multiple-documents]
+        exclude: chart/templates/
+    -   id: debug-statements
+    -   id: detect-private-key
+    -   id: end-of-file-fixer
+    -   id: no-commit-to-branch  # Prevent commits to main branch
+    -   id: trailing-whitespace
+-   repo: https://github.com/thlorenz/doctoc
+    rev: v2.0.0
+    hooks:
+    -   id: doctoc
+        exclude: .github/
+#-   repo: https://github.com/lovesegfault/beautysh
+#    rev: 6.0.1
+#    hooks:
+#    -   id: beautysh
+#
+-   repo: local
+    hooks:
+    -   id: pip-compile-multi-verify
+        name: pip-compile-multi-verify
+        entry: script/verify_requirements_files.sh
+        language: system
+        files: requirements/*
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v2.7.4
+    hooks:
+    -   id: pyupgrade
+        args: [--py3-plus, --py37-plus]
+-   repo: https://github.com/google/yapf
+    # :HACK: YAPF does not yet have an official release with pre-commit support.
+    # Until they do, use this commit hash (current as of 2021-01-29).
+    rev: 503bc40d60dac91a484acb406358c492be7c59e7
+    hooks:
+    -   id: yapf
+-   repo: https://github.com/sqlfluff/sqlfluff
+    rev: 0.6.3
+    hooks:
+    -   id: sqlfluff-fix  # Fixes SQL formatting

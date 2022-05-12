@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -exo pipefail
+
+cd ~/src
+
+source script/devenv
+
+# Setting this variable enables coverage tracking in subprocesses.
+# https://coverage.readthedocs.io/en/coverage-5.3/subprocess.html#configuring-python-for-sub-process-coverage
+export COVERAGE_PROCESS_START=1
+
+${PYTHON_BIN_PATH}/py.test -v --cov-report term-missing --cov-report xml:coverage.xml \
+    --cov=script --cov={{cookiecutter.package_name}} --cov-config=tests/config/pytest_cov.cfg \
+    integration_tests/ tests/
+
+PATH=$PYTHON_BIN_PATH:$PATH tests/script/check_coverage_and_quality.sh $(pwd)/coverage.xml

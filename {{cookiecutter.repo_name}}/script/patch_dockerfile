@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+"""Update "pip install" commands in Dockerfile to use BuildKit caching."""
+import re
+import sys
+
+print(re.sub(
+    r"RUN(( PYENV_VERSION=\"[^\"]+\")?) pip install",
+    r"RUN --mount=type=cache,target=/root/.cache/pip\1 pip install",
+    sys.stdin.read()
+))

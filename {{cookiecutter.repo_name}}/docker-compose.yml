@@ -1,0 +1,14 @@
+version: "2"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      # Set IS_PROD to 0 for local development and CI runs. Dockerfile sets
+      # IS_PROD=1 in ~/.profile, which is what will be used in prod (Docker
+      # Compose is not used in prod).
+      - IS_PROD=0
+    entrypoint: /bin/bash
+    tty: true

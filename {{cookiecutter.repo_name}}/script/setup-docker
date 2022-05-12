@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+
+my_path="$( cd "$(dirname "$0")"; pwd -P)"
+
+# script/helpers includes log functions for echoing to console in color
+source ${my_path}/helpers
+
+if ! [[ $(command -v brew) ]]
+then
+  log_error "ERROR: Homebrew not installed. Please follow installation instructions from: https://brew.sh/"
+  exit 1
+fi
+
+# If missing, install devtool and run commands to set up Docker registry access
+# and Artifactory access for Docker images and Python packages.
+if ! [[ $(command -v devtool) ]]
+then
+  log "devtool command not found, so installing it. If there are problems with devtool installation or setup,"
+  log "consult the devtool wiki page: https://confluence.mailchimp.com/display/IN/Using+devtool"
+  brew tap rsg/tap https://git.rsglab.com/rsg/homebrew-tap.git
+  brew update
+  brew install devtool
+  log "devtool installed."
+  log "Now running: devtool docker setup"
+  devtool docker setup
+  log "Now running: devtool artifactory setup"
+  devtool artifactory setup
+  log "Now running: devtool python setup"
+  devtool python setup
+  log "devtool setup complete."
+fi
+
+set -ex
+script/nuke-docker
+
+# Check whether the docker container will be created with enough memory
+${my_path}/check_docker_memory
+
+# Work around issue where "docker build" can't pull images from an authenticated
+# image repository like Artifactory but "docker pull" can.
+cat Dockerfile | sed -n 's/^FROM[[:space:]][[:space:]]*\(.*\)/\1/p' | xargs docker pull
+
+# script/setup-docker seems to fail unless this image is manually pulled using docker pull first.
+docker pull docker.io/docker/dockerfile:experimental
+
+# If pre-commit command isn't installed, log an error and exit.
+if [[ "$(pre-commit -V)" != *pre-commit* ]]
+then
+  log_error "ERROR: pre-commit is not installed. Please follow installation instructions at https://git.rsglab.com/rsg/datascience-python-cookiecutter#pre-reqs-to-using-the-cookiecutter."
+  exit 1
+fi
+# Set up pre-commit to run automatically on git commit.
+pre-commit install
+
+# In dev environments, pass the name of the host user to the Docker build.
+# This can be useful for local development (e.g. generate dynamic names for
+# cloud resources like BigQuery datasets) to avoid colliding with other
+# developers.
+# Replace "pip install" commands in Docker with a BuildKit command that caches
+# pip packages locally on the host. This is a huge speedup for projects that
+# use large Python packages, e.g. Torch.
+cat Dockerfile | script/patch_dockerfile > Dockerfile.tmp
+# This command uses two special environment variables, documented here:
+# - DOCKER_BUILDKIT: https://docs.docker.com/develop/develop-images/build_enhancements/#to-enable-buildkit-builds
+# - COMPOSE_DOCKER_CLI_BUILD: https://www.docker.com/blog/faster-builds-in-compose-thanks-to-buildkit-support/
+DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
+if [ -e secrets/*.json ]
+then
+    export GOOGLE_APPLICATION_CREDENTIALS=/opt/app/src/$(ls -1 secrets/*.json)
+# When using rsg/datascience-python-cookiecutter to start a project: uncomment these lines
+# if GCP credentials should be required during container setup.
+#else
+    #echo "Please download a GCP key and place in the secrets directory. See README for more info."
+    #exit 1
+fi
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+# :TRICKY: Make sure this file is not present in /opt/app/src (host-mounted
+# directory), because it would override the intended one in /opt/app
+# (container-only directory).
+rm -f .python-version
+
+
+docker-compose exec app /opt/app/src/script/login_oauth.sh
+
+docker-compose exec app /opt/app/src/script/devenv ${USER}
+if  [[ $1 = "-s" ]]; then
+    script/shell-docker
+fi

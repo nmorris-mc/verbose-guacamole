@@ -1,0 +1,49 @@
+[sqlfluff]
+verbose = 0
+nocolor = False
+dialect = bigquery
+templater = jinja
+rules = None
+exclude_rules = L019,L025,L027,L029,L031,L032,L034,L046
+recurse = 0
+
+[sqlfluff:templater:jinja:macros]
+
+# Some rules can be configured directly from the config common to other rules.
+[sqlfluff:rules]
+tab_space_size = 4
+max_line_length = 120
+
+# Some rules have their own specific config.
+[sqlfluff:rules:L010]
+capitalisation_policy = consistent
+
+[sqlfluff:rules:L016]
+max_line_length = 100
+
+[sqlfluff:rules:L014]
+capitalisation_policy = consistent
+
+[sqlfluff:rules:L030]
+capitalisation_policy = consistent
+
+[sqlfluff:rules:L047]
+prefer_count_1 = True
+
+# Settings in this section will be provided to SQL templates during the SQL
+# formatting/linting process. Generally, the exact values don't matter as long
+# as they result in valid SQL syntax when substituted in the file.
+[sqlfluff:templater:jinja:context]
+
+# DEFAULT VALUES: Overridden in script/run_job.sh.
+# Best practice: Use lower_case for variables
+gcp_project=gcp_project
+dataset=dataset
+user_filter=AND TRUE
+date_filter=AND TRUE
+table_at_job_start=FOR SYSTEM_TIME AS OF CAST('2020-05-11T14:02:52+00:00' AS TIMESTAMP)
+
+# GLOBAL CONSTANTS: These are not overridden in script/run_job.sh.
+# Best practice: Use UPPER_CASE for constants.
+BI_SAFE_USERS=mc-business-intelligence.gdpr.safe_users
+BI_INTERNAL_USERS=mc-business-intelligence.bi_reporting.internal_users

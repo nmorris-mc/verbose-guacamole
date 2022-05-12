@@ -1,0 +1,24 @@
+# Add packages to this file if they are "standalone" command-line tools that
+# don't need to # execute or be executed by:
+# - Python code in the repo
+# - Packages installed by the repo
+#
+# These are typically things like:
+# - Code analyzers
+# - Build/packaging tools
+diff-cover
+flake8
+mccabe
+# Note that the command-line build functionality we rely on for building
+# packages is deprecated:
+# https://github.com/pypa/pep517#deprecated-high-level
+# At some point, we can look at other build tools. The page above mentions:
+# >The PyPA build project is recommended as an alternative, although it's still
+# >quite young in October 2020.
+pep517<1.0
+pip-compile-multi
+pip-tools
+pylint
+sqlfluff
+twine
+

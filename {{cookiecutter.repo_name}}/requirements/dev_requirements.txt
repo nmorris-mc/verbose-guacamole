@@ -1,0 +1,8 @@
+# When using rsg/datascience-python-cookiecutter to start a project:
+# This file is a placeholder so "script/setup-docker" will work for a brand-new
+# project. Follow the instructions in "requirements/dev_requirements.in" to build
+# a "real" version of this file.
+google-cloud-storage
+pytest
+pytest-cov
+wheel

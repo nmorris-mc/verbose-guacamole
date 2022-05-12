@@ -1,0 +1,7 @@
+secrets/*
+.cookiecutter.json
+*.md
+docker-compose.yml
+Dockerfile
+Jenkinsfile
+experiments

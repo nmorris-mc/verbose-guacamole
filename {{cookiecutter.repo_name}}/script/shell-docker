@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Convenience script for launching a shell in the container.
+
+docker-compose exec app bash -l

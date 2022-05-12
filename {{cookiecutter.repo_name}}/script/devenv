@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -ex
+
+set +e
+find . -name '*.pyc' | xargs rm
+set -e
+
+# Development builds install the package again here because it doesn't work in
+# Dockerfile. Reason: In dev mode, the host's source directory is mounted "over"
+# the image's "src/" directory, hiding the "*.egg_info" directory -- this causes
+# weird failures if the package has any Python "entry points".
+pip install -e .
+
+
+# Optional: If your package needs to include built-in data files, as documented
+# here: https://confluence.mailchimp.com/pages/viewpage.action?pageId=694495053,
+# enable this line and provide a script for downloading the data. This step
+# ensures the files are present when developing and when creating/publishing
+# a source package.
+python script/download_package_data.py
+
+
+export PYTHON_BIN_PATH=$(dirname $(pyenv which python))
+
+# TODO: Place any additional commands here necessary for setting up a
+# development environment (e.g. creating tables in a dev database).

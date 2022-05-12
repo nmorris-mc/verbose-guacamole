@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+python script/download_package_data.py
+PYENV_VERSION=cli_env python -m pep517.build --source .

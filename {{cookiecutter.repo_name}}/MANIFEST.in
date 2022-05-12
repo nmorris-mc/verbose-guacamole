@@ -1,0 +1,15 @@
+include pyproject.toml
+
+# Do not include the script/ directory when building a package (e.g.
+# 'python setup.py dist' -> .tar.gz. If this directory is included in the package,
+# it will sometimes "hide" the script/ directory for an application, resulting
+# in some very confusing errors.
+prune script/
+
+prune integration_tests/
+prune tests/
+# Any data files placed here (e.g. created by the optional
+# script/download_package_data.py script) will be automatically embedded in
+# the Artifactory package and accessible via
+# {{cookiecutter.package_name}}/get_resource_path() .
+recursive-include {{cookiecutter.package_name}}/resources *

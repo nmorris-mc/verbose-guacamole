@@ -1,0 +1,53 @@
+version: "2"
+
+services:
+  app:
+    build:
+      # In script/setup-docker, we copy Dockerfile to Dockerfile.tmp, then tweak
+      # it to use Docker BuildKit commands to improve build performance. Here,
+      # we're telling Docker Compose to use this alternate file for development
+      # (i.e. local Mac) builds. Jenkins and production image builds use the
+      # regular Dockerfile.
+      # https://docs.docker.com/develop/develop-images/build_enhancements
+      dockerfile: Dockerfile.tmp
+    volumes:
+      # Host source code directory
+      - ./:/opt/app/src
+      # Host secrets directory (e.g. Google service account JSON files)
+      - ./secrets:/run/secrets
+      # Host gcloud authentication; avoids having to authenticate in setup-docker
+      - ~/.config/gcloud:/opt/app/.config/gcloud
+    environment:
+      # The HOST_USER variable can be useful in *development* for things like
+      # automatic naming of BigQuery datasets. For example, if several people are
+      # working on the same BigQuery job, their output can be written to a consistent
+      # place (so they can rerun things) without "colliding" with other developers.
+      - HOST_USER=${USER}
+      # Uncomment this if you want to run with a service account key set up on
+      # your host machine. Generally this is a BAD idea though. Use OAuth.
+      #  # Set this environment variable with the value set in script/setup-docker
+      #  - GOOGLE_APPLICATION_CREDENTIALS
+    # When using rsg/datascience-python-cookiecutter to start a project:
+    # If your app has a server component, you can expose the server on a port
+    # on your host machine. This will allow you to send requests to the server
+    # from your host machine's browser, or curl, etc. Ports are specified in
+    # HOST:CONTAINER order.
+    #ports:
+      #- "127.0.0.1:8080:8080"
+
+  # When using rsg/datascience-python-cookiecutter to start a project:
+  # You can add a service for a backend. In this example we're setting up an Elasticsearch
+  # service that will be reachable from the app service at http://elasticsearch:9200
+  #elasticsearch:
+    #image: elasticsearch:6.4.0
+    #environment:
+      # Run Elasticsearch in development mode. If this were not set, we would
+      # need to increase the vm.max_map_count kernel setting on Jenkins. See:
+      # https://www.elastic.co/guide/en/elasticsearch/reference/6.4/docker.html#docker-cli-run
+      #- discovery.type=single-node
+    # :TRICKY: Map ports to the other containers but *not* to the host. If we
+    # map to the host, it breaks in Jenkins when Python 2 and 3 tests are
+    # running in parallel. They each launch the containers and we get port
+    # collisions with multiple containers trying to grab the same host ports.
+    #ports:
+      #- 9200

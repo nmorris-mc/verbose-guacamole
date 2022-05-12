@@ -1,0 +1,69 @@
+# Ignore all files in secrets/ except for .gitkeep (so that folder itself will
+# be in git).
+secrets/*
+!secrets/.gitkeep
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+/Dockerfile.tmp
+/Dockerfile.tmp.bak
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# pytest-cache
+.pytest_cache/
+
+# Sphinx documentation
+docs/_build/
+
+# pyenv
+.python-version
+
+# virtualenv
+.venv
+venv/
+ENV/
+
+# OS X
+.DS_Store
+
+# PyCharm
+.idea/*
+/.env
+
+# Jupyter
+.ipynb_checkpoints
+
+/{{cookiecutter.package_name}}/resources/*
+# allow init file so that resources/ dir will be included in git repo
+!/{{cookiecutter.package_name}}/resources/__init__.py

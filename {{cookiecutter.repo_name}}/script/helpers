@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+NORMAL=$(tput sgr0)
+GREEN=$(tput setaf 2)
+RED=$(tput setaf 1)
+
+log() {
+  echo -e "${GREEN}==> $*${NORMAL}"
+}
+
+log_error() {
+  echo -e "${RED}$*${NORMAL}"
+}
+
+docker_environment_check() {
+ if [ -f /.dockerenv ]; then
+    log "Confirmed that you are running this command in a Docker container"
+  else
+    log_error "ERROR: this command must be run inside a Docker container. Exiting."
+    exit 1
+  fi
+}

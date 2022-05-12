@@ -1,0 +1,16 @@
+# When using rsg/datascience-python-cookiecutter to start a project, add or
+# modify this list to match the requirements of your project.
+# This file lists the direct package dependencies of a project.
+# To compile it, run `script/update_requirements.sh` in Docker (in case of
+# platform-specific requirements) from the top-level directory of the repo.
+wheel
+mcdsgcptools
+
+
+# TRICKY: when pip-compile runs, the dev_requirements are able to reference the prod requirements (this file)
+# but NOT the other way around to avoid circular dependencies. The pip-compile-multi library, a dev
+# dependency, requires importlib-metadata==4.2.0. However, the prod requirements are not aware of this, so
+# any library that requires importlib-metadata will resolve it to the latest version, causing an error.
+# Pinning this here doesn't hurt anything since the package will always get installed with the dev requirements,
+# but it may prevent a confusing error. 
+importlib-metadata==4.2.0

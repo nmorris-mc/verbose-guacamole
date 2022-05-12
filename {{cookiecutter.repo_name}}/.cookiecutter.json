@@ -1,0 +1,17 @@
+{
+    "_extensions": [
+        "mcds_cookiecutter.jinja_extensions.DateStrChangeFormatExtension",
+        "mcds_cookiecutter.jinja_extensions.GetDockerBaseImageExtension"
+    ],
+    "_template": "/Users/michellemelton/Desktop/GED/datascience-python-cookiecutter",
+    "gcloud_sdk": "Install",
+    "gcp_creds_base_name": "",
+    "is_airflow_pando": "No, do not configure Pando job to be scheduled by Airflow",
+    "is_dataflow": "No, do not add support for Apache Beam/Cloud Dataflow",
+    "is_pando": "No, do not configure Pando integration",
+    "package_name": "{{cookiecutter.package_name}}",
+    "project_type": "library",
+    "python_version": "${DEFAULT_PYTHON_VERSION}",
+    "repo_name": "{{cookiecutter.repo_name}}",
+    "today": "04-25-2022"
+}
